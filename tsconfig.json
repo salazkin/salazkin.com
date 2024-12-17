@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "es2017"],
+    "module": "es6",
+    "target": "es6",
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "baseUrl": "src",
+    "noImplicitAny": true,
+    "allowSyntheticDefaultImports": true
+  }
+}
