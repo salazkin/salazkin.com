@@ -96,15 +96,22 @@ export class GraphicsDiv extends ContainerDiv {
     return this;
   }
 
-  public drawPathFromString(d: string): this {
+  public drawPathFromString(d: string, viewBox: { x: number; y: number; w: number; h: number }): this {
     const path = document.createElementNS(this.svgNS, "path") as SVGPathElement;
     path.setAttribute("d", d);
     path.setAttribute("fill", this.currentFill ?? "none");
+    const strokeWidth = this.currentStroke?.width ?? 0;
     if (this.currentStroke) {
       path.setAttribute("stroke", this.currentStroke.color);
       path.setAttribute("stroke-width", this.currentStroke.width.toString());
     }
     this.svg.appendChild(path);
+    this.updateBounds(
+      viewBox.x - strokeWidth * 0.5,
+      viewBox.y - strokeWidth * 0.5,
+      viewBox.w + strokeWidth,
+      viewBox.h + strokeWidth
+    );
     return this;
   }
 
