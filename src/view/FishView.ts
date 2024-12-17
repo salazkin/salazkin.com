@@ -111,15 +111,16 @@ export class FishView extends ContainerDiv {
 
     this.updateTailSwingAnimation();
     this.updateSpineBones(this.tailSwingSpineRotations, this.spineBlendRotations, this.currentSpineBlend);
+    this.drawSkin();
+  }
 
+  private drawSkin(): void {
     this.graphics.clear();
     this.graphics.beginFill(FishViewModel.getFishColor(this.fishId));
     this.graphics.moveTo(this.skinBones[0].transform.global.x, this.skinBones[0].transform.global.y);
-
     for (let i = 1; i < this.skinBones.length; i++) {
       this.graphics.lineTo(this.skinBones[i].transform.global.x, this.skinBones[i].transform.global.y);
     }
-
     const [x, y] = this.currentPos;
     this.graphics.x = x;
     this.graphics.y = y;
