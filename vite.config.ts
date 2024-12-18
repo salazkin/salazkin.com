@@ -3,8 +3,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
-  root: "./src",
   build: {
+    outDir: "dist",
     rollupOptions: {
       output: {
         entryFileNames: "index.js"
