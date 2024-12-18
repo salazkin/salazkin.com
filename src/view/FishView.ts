@@ -1,5 +1,3 @@
-import { ContainerDiv } from "components/ContainerDiv";
-import { GraphicsDiv } from "components/GraphicsDiv";
 import { EventBus } from "events/EventBus";
 import { FishModel } from "model/FishModel";
 import { FishNavigationModel, TurnDirection } from "model/FishNavigationModel";
@@ -12,6 +10,7 @@ import {
   angleBetweenTwoPoints,
   degreeToRadians,
   distanceBetweenTwoPoints,
+  getColorStr,
   lerp,
   radiansToDegree,
   smoothInterpolate,
@@ -19,8 +18,10 @@ import {
 } from "utils/Utils";
 import { Bone } from "./Bone";
 
-export class FishView extends ContainerDiv {
-  private graphics: GraphicsDiv;
+export class FishView {
+  private svg: HTMLElement;
+  private shape: SVGPolylineElement;
+
   private fishStateModel: FishStateModel;
 
   private fishNavigationModel: FishNavigationModel;
@@ -46,12 +47,15 @@ export class FishView extends ContainerDiv {
   private gotoTailSpeed: number;
 
   private spineBlendRotations: number[];
+  private skinPoints: number[] = [];
 
   constructor(private fishId: number) {
-    super();
-    this.graphics = new GraphicsDiv();
-    this.addChild(this.graphics);
+    this.svg = document.getElementById("main-svg");
 
+    this.shape = this.createFishShape(getColorStr(FishViewModel.getFishColor(fishId)));
+    this.shape.addEventListener("pointerover", this.onOver);
+    this.svg.appendChild(this.shape);
+ 
     const { fishStateModel, fishNavigationModel } = FishModel.getModel(fishId);
 
     this.fishStateModel = fishStateModel;
@@ -62,8 +66,6 @@ export class FishView extends ContainerDiv {
     this.currentPos = fishNavigationModel.getCurrentPosition();
     this.currentRotation = fishNavigationModel.getCurrentRotation();
     this.moveDecay = FishViewModel.getMoveDecay();
-
-    this.graphics.on("pointerover", this.onOver);
 
     window.addEventListener("resize", this.onResize);
 
@@ -115,16 +117,17 @@ export class FishView extends ContainerDiv {
   }
 
   private drawSkin(): void {
-    this.graphics.clear();
-    this.graphics.beginFill(FishViewModel.getFishColor(this.fishId));
-    this.graphics.moveTo(this.skinBones[0].transform.global.x, this.skinBones[0].transform.global.y);
-    for (let i = 1; i < this.skinBones.length; i++) {
-      this.graphics.lineTo(this.skinBones[i].transform.global.x, this.skinBones[i].transform.global.y);
-    }
+    this.skinPoints.length = 0;
+    this.skinBones.forEach(bone => {
+      this.skinPoints.push(bone.transform.global.x, bone.transform.global.y);
+    });
     const [x, y] = this.currentPos;
-    this.graphics.x = x;
-    this.graphics.y = y;
-    this.graphics.rotation = radiansToDegree(this.currentRotation) + 270; //rotate skeleton
+    this.shape.setAttributeNS(null, "points", this.skinPoints.join(","));
+    this.shape.setAttributeNS(
+      null,
+      "transform",
+      `translate(${x} ${y}) rotate(${radiansToDegree(this.currentRotation) - 90})`
+    );
   }
 
   private updateTailSwingAnimation(): void {
@@ -193,5 +196,11 @@ export class FishView extends ContainerDiv {
       }
       this.spineBones.push(bone);
     }
+  }
+
+  private createFishShape(color: string): SVGPolylineElement {
+    const shape = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    shape.setAttributeNS(null, "fill", color);
+    return shape;
   }
 }
