@@ -1,4 +1,4 @@
-import { degreeToRadians } from "../utils/Utils";
+import { degreeToRadians } from "utils/mathUtils";
 
 export class Bone {
   public transform = { local: { x: 0, y: 0, rotation: 0 }, global: { x: 0, y: 0, rotation: 0 } };

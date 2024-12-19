@@ -1,4 +1,4 @@
-import { Vec2 } from "types/Types";
+import { Vec2 } from "types/types";
 import { Signal } from "utils/Signal";
 import {
   addVec2,
@@ -7,46 +7,44 @@ import {
   multiplyScalarVec2,
   perpendicularVec2,
   unitVec2
-} from "utils/Utils";
+} from "utils/mathUtils";
 
-/**
- * Represents the direction of a turn.
- * -1: Left turn, 0: No turn, 1: Right turn.
- */
+// direction of a turn: -1: Left turn, 0: No turn, 1: Right turn.
 export type TurnDirection = -1 | 0 | 1;
 
-/**
- * FishNavigationModel handles the movement logic, rotation, and navigation behavior of a fish.
- */
 export class FishNavigationModel {
-  /** The current movement speed of the fish. */
+  //The current movement speed of the fish.
   private currentSpeed: number;
 
-  /** Indicates whether the fish is in a "rush" state for faster movement. */
+  //Indicates whether the fish is in a "rush" state for faster movement.
   private rush: boolean = false;
 
-  /** The current rotation angle of the fish in radians. */
+  //The current rotation angle of the fish in radians.
   private currentRotation: number;
 
-  /** The current movement direction of the fish as a normalized vector. */
+  //The current movement direction of the fish as a normalized vector.
   private currentMoveDirection: Vec2;
 
-  /** The current position of the fish on the screen. */
+  //The current position of the fish on the screen.
   private currentPos: Vec2 = [0, 0];
 
-  /** The radius used for determining if the fish is outside screen bounds. */
+  //The radius used for determining if the fish is outside screen bounds.
   private fishBoundsRadius = 120;
 
-  /** The current turn direction of the fish (-1, 0, or 1). */
+  //The current turn direction of the fish (-1, 0, or 1).
   private turnDirection: TurnDirection = 0;
 
-  /** Signal dispatched when the turn direction changes. */
+  //Signal dispatched when the turn direction changes.
   public onTurnDirectionChangeSignal: Signal<TurnDirection> = new Signal();
 
-  constructor() {
+  constructor(private fishId: number) {
     this.setRandomSpeed();
     this.setCurrentRotation(degreeToRadians(Math.random() * 360));
     this.setCurrentPosition(-120 - Math.random() * 120, -120 - Math.random() * 120);
+  }
+
+  public getFishId(): number {
+    return this.fishId;
   }
 
   /**
@@ -117,8 +115,8 @@ export class FishNavigationModel {
    * @returns An object containing the center point, angle, and radius of rotation.
    */
   public getRandomRotationAngle(): { center: Vec2; angle: number; radius: number } {
-    const randomDistance = Math.random() * 90 + 30; // Random radius.
-    let randomAngle = Math.random() * 190; // Random angle.
+    const randomDistance = Math.random() * 90 + 30;
+    let randomAngle = Math.random() * 190;
     if (Math.random() > 0.3) {
       randomAngle *= 0.6; // Reduces wide angle probability.
     }

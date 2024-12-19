@@ -1,11 +1,8 @@
 /**
  * `Signal` is a class that implements the Observer pattern.
- * It provides a way for objects (observers) to listen for and react to events (signals) in a decoupled way.
  */
 export class Signal<T> {
-  // A map of regular listeners (slots), grouped by their contexts.
   private slots: Map<unknown, Set<(data: T) => void>> = new Map();
-  // A map of one-time listeners, grouped by their contexts.
   private once: Map<unknown, Set<(data: T) => void>> = new Map();
 
   /**
@@ -27,13 +24,6 @@ export class Signal<T> {
     this.addSlot(this.once, slot, context || this);
   }
 
-  /**
-   * Adds a listener to a given map.
-   * This is a helper function used by `add` and `addOnce`.
-   * @param target The map to add the listener to.
-   * @param slot The listener function.
-   * @param context The context in which the listener function should be called.
-   */
   private addSlot(
     target: Map<unknown, Set<(data: T) => void>>,
     slot: (data: T) => void,
@@ -55,13 +45,6 @@ export class Signal<T> {
     this.removeSlot(this.once, slot, context || this);
   }
 
-  /**
-   * Removes a listener from a given map.
-   * This is a helper function used by `remove`.
-   * @param target The map to remove the listener from.
-   * @param slot The listener function to remove.
-   * @param context The context in which the listener function was added.
-   */
   private removeSlot(
     target: Map<unknown, Set<(data: T) => void>>,
     slot: (data: T) => void,

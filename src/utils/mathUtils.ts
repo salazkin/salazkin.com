@@ -1,4 +1,4 @@
-import { Vec2 } from "types/Types";
+import { Vec2 } from "types/types";
 
 /**
  * Converts degrees to radians.

@@ -20,7 +20,6 @@ export class EventBus {
    * @param {Events[K]} params - The data to pass to the event listeners.
    */
   public static publish<K extends keyof Events>(event: K, params: Events[K]): void {
-    // If a signal exists for the event, dispatch it with the provided parameters.
     this.signals[event]?.dispatch(params);
   }
 
@@ -32,17 +31,12 @@ export class EventBus {
    * @returns {Subscribe} - An object with an `unsubscribe` method to remove the listener.
    */
   public static subscribe<K extends keyof Events>(event: K, cb: (data: Events[K]) => void, context?: any): Subscribe {
-    // Retrieve or create a new signal for the event.
     let signal = this.signals[event];
     if (!signal) {
       signal = new Signal<Events[K]>();
       this.signals[event] = signal;
     }
-
-    // Add the callback to the signal.
     signal.add(cb, context);
-
-    // Return an unsubscribe method to allow cleanup.
     return {
       unsubscribe: () => {
         signal?.remove(cb, context);
@@ -63,17 +57,12 @@ export class EventBus {
     cb: (data: Events[K]) => void,
     context?: any
   ): Subscribe {
-    // Retrieve or create a new signal for the event.
     let signal = this.signals[event];
     if (!signal) {
       signal = new Signal<Events[K]>();
       this.signals[event] = signal;
     }
-
-    // Add the callback to the signal as a one-time listener.
     signal.addOnce(cb, context);
-
-    // Return an unsubscribe method to allow cleanup.
     return {
       unsubscribe: () => {
         signal?.remove(cb, context);
@@ -88,7 +77,6 @@ export class EventBus {
    */
   private static cleanupSignal<K extends keyof Events>(event: K): void {
     const signal = this.signals[event];
-    // If the signal has no remaining listeners, delete it from the signals object.
     if (signal && signal.isEmpty()) {
       delete this.signals[event];
     }

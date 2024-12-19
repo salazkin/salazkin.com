@@ -1,12 +1,16 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "es2017"],
-    "module": "es6",
-    "target": "es6",
-    "sourceMap": true,
+    "module": "esnext",
+    "target": "esnext",
     "moduleResolution": "node",
-    "baseUrl": "src",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/*"]
+    },
     "noImplicitAny": true,
-    "allowSyntheticDefaultImports": true
-  }
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "allowJs": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"]
 }

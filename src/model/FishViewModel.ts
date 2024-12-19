@@ -1,4 +1,4 @@
-import { Ease } from "utils/Tween";
+import { quadEaseOut } from "utils/easingFunctions";
 
 export const FishViewModel = new (class {
   // Total number of spine bones
@@ -11,7 +11,7 @@ export const FishViewModel = new (class {
   public readonly tailSwingFollowOffset: number = 50;
 
   // Decay factor for smoothing the tail speed transition
-  public readonly tailSpeedDecay: number = 2;
+  public readonly tailSpeedDecay: number = 1.5;
 
   // Decay factor for smoothing the blending of spine poses
   public readonly spineBlendDecay: number = 5;
@@ -45,7 +45,7 @@ export const FishViewModel = new (class {
    * @returns {number} - The scale value for the spine bone
    */
   public getSpineBoneScale(boneIndex: number): number {
-    return Ease.QuadEaseOut(boneIndex / this.totalSpineBones);
+    return quadEaseOut(boneIndex / this.totalSpineBones);
   }
 
   /**
