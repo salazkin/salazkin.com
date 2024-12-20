@@ -1,8 +1,15 @@
 <template>
   <svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient :id="`gradient${props.fishId}`" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" :style="`stop-color: ${fishColor}; stop-opacity: 0.4;`" />
+        <stop offset="60%" :style="`stop-color: ${fishColor}; stop-opacity: 1;`" />
+      </linearGradient>
+    </defs>
+
     <polyline
       :points="skinPoints"
-      :fill="fishColor"
+      :fill="`url(#gradient${props.fishId})`"
       :transform="`translate(${fishPos[0]} ${fishPos[1]}) rotate(${rotationDeg - 90})`"
       @pointerover="onOver"
     />
@@ -44,7 +51,7 @@ const skinPoints: Ref<string> = ref();
 const fishColor: Ref<string> = ref();
 const { spineTurnPoseBonesAngle, totalSpineBones } = FishViewModel;
 
-fishColor.value = getColorStr(FishViewModel.getFishColor(props.fishId));
+fishColor.value = getColorStr(FishViewModel.getFishColor());
 
 const fishNavigationModel: Ref<FishNavigationModel> = ref();
 

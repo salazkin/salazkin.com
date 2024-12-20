@@ -30,15 +30,7 @@ export const FishViewModel = new (class {
   public readonly totalColorfulFishCount: number = 3;
 
   // Pool of available colors for colorful fish
-  //private fishColors: number[] = [0x99ff00, 0x00ccff, 0xff6600, 0xff9933, 0xff99cc, 0xff0000];
-  //private fishColors: number[] = [0xef476f, 0xf78c6b, 0xffd166, 0x06d6a0, 0x118ab2, 0x073b4c];
-  private fishColors: number[] = [0x01befe, 0xffdd00, 0xff7d00, 0xff006d, 0xadff02, 0x8f00ff];
-
-  // Default color for non-colorful fish
-  private defaultFishColor: number = 0xaaaaaa;
-
-  // Array to track assigned fish colors, avoiding duplicates
-  private takenFishColors: number[] = [];
+  private fishColors: number[] = [0x01befe, 0xffdd00, 0xff7d00, 0xff006d, 0xadff02, 0x8f00ff, 0xff0000];
 
   /**
    * Calculates the scale for a spine bone based on its index.
@@ -72,20 +64,11 @@ export const FishViewModel = new (class {
   }
 
   /**
-   * Assigns and returns a unique color for colorful fish based on their ID.
-   * If the fish ID exceeds the colorful fish count, the default color is returned.
-   * @param {number} fishId - The unique ID of the fish
-   * @returns {number} - The assigned color for the fish
+   * Generates a random color for the fish.
+   * @returns {number} - The random color for the fish
    */
-  public getFishColor(fishId: number): number {
-    if (fishId < this.totalColorfulFishCount) {
-      if (this.takenFishColors[fishId] === undefined) {
-        const randomColorIndex = Math.floor(Math.random() * this.fishColors.length);
-        // Assign and remove the selected color to avoid duplicates
-        this.takenFishColors[fishId] = this.fishColors.splice(randomColorIndex, 1)[0];
-      }
-      return this.takenFishColors[fishId];
-    }
-    return this.defaultFishColor;
+  public getFishColor(): number {
+    const randomColorIndex = Math.floor(Math.random() * this.fishColors.length);
+    return this.fishColors[randomColorIndex];
   }
 })();
