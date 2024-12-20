@@ -5,21 +5,15 @@
   <Logo />
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import Logo from "components/Logo.vue";
 import { computed } from "vue";
 import { FishViewModel } from "model/FishViewModel";
 import Fish from "components/Fish.vue";
 
-export default {
-  components: { Logo, Fish },
-  setup() {
-    const reversedFishIds = computed(() => {
-      return Array.from(Array(FishViewModel.totalFishCount).keys()).reverse();
-    });
-    return { reversedFishIds };
-  }
-};
+const reversedFishIds = computed(() => {
+  return Array.from(Array(FishViewModel.totalFishCount).keys()).reverse();
+});
 </script>
 
 <style>

@@ -14,7 +14,7 @@ export const rotationStateHandler = (data: {
   return async (next, exit) => {
     const { fishNavigationModel, moveDecay } = data;
 
-    moveDecay.value = FishViewModel.getMoveDecay();
+    moveDecay.value = FishViewModel.getRandomMoveDecay();
     if (fishNavigationModel.value.isFishOutsideScreenBounds()) {
       next("moveForward");
       return;

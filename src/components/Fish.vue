@@ -1,5 +1,5 @@
 <template>
-  <svg>
+  <svg xmlns="http://www.w3.org/2000/svg">
     <polyline
       :points="skinPoints"
       :fill="fishColor"
@@ -9,7 +9,7 @@
   </svg>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { Bone } from "components/Bone";
 import { EventBus } from "events/EventBus";
 import { FishNavigationModel, TurnDirection } from "model/FishNavigationModel";
@@ -33,163 +33,145 @@ import { states } from "utils/promiseUtils";
 import { Timer } from "utils/Timer";
 import { onMounted, Ref, ref } from "vue";
 
-export default {
-  name: "Fish",
-  props: {
-    fishId: {
-      type: Number,
-      required: true
-    }
-  },
-  setup(props) {
-    const fishPos: Ref<Vec2> = ref([0, 0]);
-    const rotationDeg: Ref<number> = ref(0);
-    const skinPoints: Ref<string> = ref("");
+const props = defineProps<{
+  fishId: number;
+}>();
 
-    const fishColor = getColorStr(FishViewModel.getFishColor(props.fishId));
-    const fishNavigationModel: Ref<FishNavigationModel> = ref(null);
+const fishPos: Ref<Vec2> = ref([0, 0]);
+const rotationDeg: Ref<number> = ref(0);
+const skinPoints: Ref<string> = ref();
 
-    const moveDecay: Ref<number> = ref(0);
-    moveDecay.value = FishViewModel.getMoveDecay();
+const fishColor: Ref<string> = ref();
+const { spineTurnPoseBonesAngle, totalSpineBones } = FishViewModel;
 
-    const totalSpineBones = FishViewModel.totalSpineBones;
+fishColor.value = getColorStr(FishViewModel.getFishColor(props.fishId));
 
-    let tailSwingSpineRootBoneRotation: number = 0;
-    let tailSwingSpineRotations: number[] = new Array(totalSpineBones).fill(0);
+const fishNavigationModel: Ref<FishNavigationModel> = ref();
 
-    const spineTurnPoseBonesAngle = FishViewModel.spineTurnPoseBonesAngle;
-    let rightTurnSpineRotations = new Array(totalSpineBones).fill(-spineTurnPoseBonesAngle);
-    let leftTurnSpineRotations = new Array(totalSpineBones).fill(spineTurnPoseBonesAngle);
-    let spineBlendRotations = rightTurnSpineRotations;
+const moveDecay: Ref<number> = ref(0);
+moveDecay.value = FishViewModel.getRandomMoveDecay();
 
-    let spineBones: Bone[] = [];
-    let skinBones: Bone[] = [];
+const tailSwingSpineRootBoneRotation: Ref<number> = ref(0);
+const tailSwingSpineRotations: Ref<number[]> = ref(new Array(totalSpineBones).fill(0));
 
-    let currentSpineBlend: number = 0;
-    let gotoSpineBlend: number = 0;
+const rightTurnSpineRotations: Ref<number[]> = ref(new Array(totalSpineBones).fill(-spineTurnPoseBonesAngle));
+const leftTurnSpineRotations: Ref<number[]> = ref(new Array(totalSpineBones).fill(spineTurnPoseBonesAngle));
+let spineBlendRotations: Ref<number[]> = rightTurnSpineRotations;
 
-    let currentTailSpeed: Ref<number> = ref(0);
-    let gotoTailSpeed: Ref<number> = ref(0);
+let spineBones: Ref<Bone[]> = ref([]);
+let skinBones: Ref<Bone[]> = ref([]);
 
-    function onTurnDirectionChange(turnDirection: TurnDirection): void {
-      if (turnDirection === 0) {
-        gotoSpineBlend = 0;
-        return;
-      }
-      spineBlendRotations = turnDirection === 1 ? rightTurnSpineRotations : leftTurnSpineRotations;
-      gotoSpineBlend = 1;
-    }
+const currentSpineBlend: Ref<number> = ref(0);
+const gotoSpineBlend: Ref<number> = ref(0);
 
-    function drawSkin() {
-      skinPoints.value = skinBones.map(bone => [bone.transform.global.x, bone.transform.global.y]).join(",");
-    }
+const currentTailSpeed: Ref<number> = ref(0);
+const gotoTailSpeed: Ref<number> = ref(0);
 
-    function setRandomTailSpeed(): void {
-      const { startSpeed, endSpeed } = FishViewModel.getRandomTailSpeed(fishNavigationModel.value.isRush());
-      currentTailSpeed.value = startSpeed;
-      gotoTailSpeed.value = endSpeed;
-    }
-
-    function createBones(): void {
-      let prvScale = 0;
-      const totalSpineBones = FishViewModel.totalSpineBones;
-      for (let i = 0; i <= totalSpineBones; i++) {
-        const scale = FishViewModel.getSpineBoneScale(i);
-        const segmentScale = scale - prvScale;
-        prvScale = scale;
-        const offsetX = (1 - scale) * FishViewModel.fishWidth * 0.5;
-        const offsetY = segmentScale * FishViewModel.fishHeight;
-        const bone = new Bone(0, -offsetY, spineBones[i - 1]);
-        if (i < totalSpineBones) {
-          skinBones.push(new Bone(offsetX, 0, bone));
-          skinBones.unshift(new Bone(-offsetX, 0, bone));
-        } else {
-          skinBones.unshift(bone);
-        }
-        spineBones.push(bone);
-      }
-    }
-
-    const onEnterFrame = (dt: number) => {
-      const gotoPos = fishNavigationModel.value.getCurrentPosition();
-      const currentPos = smoothInterpolateVec2([fishPos.value[0], fishPos.value[1]], gotoPos, moveDecay.value, dt);
-      const dist = distanceBetweenTwoPoints(currentPos, gotoPos);
-      if (dist > 0.1) {
-        rotationDeg.value = radiansToDegree(Math.PI * 0.5 - angleBetweenTwoPoints(currentPos, gotoPos));
-      }
-
-      currentTailSpeed.value = smoothInterpolate(
-        currentTailSpeed.value,
-        gotoTailSpeed.value,
-        FishViewModel.tailSpeedDecay,
-        dt
-      );
-      currentSpineBlend = smoothInterpolate(currentSpineBlend, gotoSpineBlend, FishViewModel.spineBlendDecay, dt);
-
-      updateTailSwingAnimation();
-      updateSpineBones(tailSwingSpineRotations, spineBlendRotations, currentSpineBlend);
-
-      fishPos.value = currentPos;
-
-      drawSkin();
-    };
-
-    function updateSpineBones(pose1: number[], pose2: number[], blend: number): void {
-      for (let i = 0; i < FishViewModel.totalSpineBones; i++) {
-        const bone = spineBones[i];
-        bone.setRotation(lerp(pose1[i], pose2[i], blend));
-        bone.updateGlobalTransform();
-        bone.children.forEach(child => {
-          child.updateGlobalTransform();
-        });
-      }
-    }
-
-    function updateTailSwingAnimation(): void {
-      tailSwingSpineRootBoneRotation = (tailSwingSpineRootBoneRotation + currentTailSpeed.value) % 360;
-      for (let i = 0; i < FishViewModel.totalSpineBones; i++) {
-        tailSwingSpineRotations[i] =
-          Math.sin(degreeToRadians(tailSwingSpineRootBoneRotation - i * FishViewModel.tailSwingFollowOffset)) *
-          FishViewModel.tailSwingMaxBend;
-      }
-    }
-
-    const onOver = () => {
-      EventBus.publish("onFishPoke", props.fishId);
-    };
-
-    onMounted(() => {
-      fishNavigationModel.value = new FishNavigationModel(props.fishId);
-      fishPos.value = fishNavigationModel.value.getCurrentPosition();
-
-      setRandomTailSpeed();
-      createBones();
-
-      fishNavigationModel.value.onTurnDirectionChangeSignal.add(onTurnDirectionChange);
-      states<FishState>({
-        async start(next) {
-          next("moveForward");
-        },
-        idle: idleStateHandler({ fishNavigationModel }),
-        rotation: rotationStateHandler({ fishNavigationModel, moveDecay }),
-        moveForward: moveForwardStateHandler({ fishNavigationModel, currentTailSpeed, gotoTailSpeed })
-      });
-
-      new Timer(onEnterFrame).start();
-      window.addEventListener("resize", () => {
-        EventBus.publish("onFishPoke", props.fishId);
-      });
-    });
-
-    return {
-      fishPos,
-      rotationDeg,
-      skinPoints,
-      fishColor,
-      onOver
-    };
+function onTurnDirectionChange(turnDirection: TurnDirection): void {
+  if (turnDirection === 0) {
+    gotoSpineBlend.value = 0;
+    return;
   }
+  spineBlendRotations = turnDirection === 1 ? rightTurnSpineRotations : leftTurnSpineRotations;
+  gotoSpineBlend.value = 1;
+}
+
+function drawSkin() {
+  skinPoints.value = skinBones.value.map(bone => [bone.transform.global.x, bone.transform.global.y]).join(",");
+}
+
+function setRandomTailSpeed(): void {
+  const { startSpeed, endSpeed } = FishViewModel.getRandomTailSpeed(fishNavigationModel.value.isRush());
+  currentTailSpeed.value = startSpeed;
+  gotoTailSpeed.value = endSpeed;
+}
+
+function createBones(): void {
+  let prvScale = 0;
+  const { totalSpineBones, fishWidth, fishHeight } = FishViewModel;
+  for (let i = 0; i <= totalSpineBones; i++) {
+    const scale = FishViewModel.getSpineBoneScale(i);
+    const segmentScale = scale - prvScale;
+    prvScale = scale;
+    const offsetX = (1 - scale) * fishWidth * 0.5;
+    const offsetY = segmentScale * fishHeight;
+    const bone = new Bone(0, -offsetY, spineBones.value[i - 1]);
+    if (i < totalSpineBones) {
+      skinBones.value.push(new Bone(offsetX, 0, bone));
+      skinBones.value.unshift(new Bone(-offsetX, 0, bone));
+    } else {
+      skinBones.value.unshift(bone);
+    }
+    spineBones.value.push(bone);
+  }
+}
+
+const onEnterFrame = (dt: number) => {
+  const gotoPos = fishNavigationModel.value.getCurrentPosition();
+  const currentPos = smoothInterpolateVec2([fishPos.value[0], fishPos.value[1]], gotoPos, moveDecay.value, dt);
+  const dist = distanceBetweenTwoPoints(currentPos, gotoPos);
+  if (dist > 0.1) {
+    rotationDeg.value = radiansToDegree(Math.PI * 0.5 - angleBetweenTwoPoints(currentPos, gotoPos));
+  }
+  const { tailSpeedDecay, spineBlendDecay } = FishViewModel;
+  currentTailSpeed.value = smoothInterpolate(currentTailSpeed.value, gotoTailSpeed.value, tailSpeedDecay, dt);
+  currentSpineBlend.value = smoothInterpolate(currentSpineBlend.value, gotoSpineBlend.value, spineBlendDecay, dt);
+
+  updateTailSwingAnimation();
+  updateSpineBones(tailSwingSpineRotations.value, spineBlendRotations.value, currentSpineBlend.value);
+
+  fishPos.value = currentPos;
+
+  drawSkin();
 };
+
+function updateSpineBones(pose1: number[], pose2: number[], blend: number): void {
+  const { totalSpineBones } = FishViewModel;
+  for (let i = 0; i < totalSpineBones; i++) {
+    const bone = spineBones.value[i];
+    bone.setRotation(lerp(pose1[i], pose2[i], blend));
+    bone.updateGlobalTransform();
+    bone.children.forEach(child => {
+      child.updateGlobalTransform();
+    });
+  }
+}
+
+function updateTailSwingAnimation(): void {
+  tailSwingSpineRootBoneRotation.value = (tailSwingSpineRootBoneRotation.value + currentTailSpeed.value) % 360;
+  const { totalSpineBones, tailSwingFollowOffset, tailSwingMaxBend } = FishViewModel;
+  for (let i = 0; i < totalSpineBones; i++) {
+    tailSwingSpineRotations.value[i] =
+      Math.sin(degreeToRadians(tailSwingSpineRootBoneRotation.value - i * tailSwingFollowOffset)) * tailSwingMaxBend;
+  }
+}
+
+const onOver = () => {
+  EventBus.publish("onFishPoke", props.fishId);
+};
+
+onMounted(() => {
+  fishNavigationModel.value = new FishNavigationModel(props.fishId);
+  fishPos.value = fishNavigationModel.value.getCurrentPosition();
+
+  setRandomTailSpeed();
+  createBones();
+
+  fishNavigationModel.value.onTurnDirectionChangeSignal.add(onTurnDirectionChange);
+  states<FishState>({
+    async start(next) {
+      next("moveForward");
+    },
+    idle: idleStateHandler({ fishNavigationModel }),
+    rotation: rotationStateHandler({ fishNavigationModel, moveDecay }),
+    moveForward: moveForwardStateHandler({ fishNavigationModel, currentTailSpeed, gotoTailSpeed })
+  });
+
+  new Timer(onEnterFrame).start();
+  window.addEventListener("resize", () => {
+    EventBus.publish("onFishPoke", props.fishId);
+  });
+});
 </script>
 
 <style scoped>

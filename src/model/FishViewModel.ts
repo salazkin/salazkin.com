@@ -14,7 +14,7 @@ export const FishViewModel = new (class {
   public readonly tailSpeedDecay: number = 1.5;
 
   // Decay factor for smoothing the blending of spine poses
-  public readonly spineBlendDecay: number = 5;
+  public readonly spineBlendDecay: number = 3;
 
   // Rotation angle for each spine bone during a turn
   public readonly spineTurnPoseBonesAngle: number = 13;
@@ -65,8 +65,8 @@ export const FishViewModel = new (class {
    * Calculates a random decay factor for smoothing the fish's position.
    * @returns {number} - The decay factor
    */
-  public getMoveDecay(): number {
-    return 1 + Math.random() * 2;
+  public getRandomMoveDecay(): number {
+    return 1.5 + Math.random() * 1.5;
   }
 
   /**

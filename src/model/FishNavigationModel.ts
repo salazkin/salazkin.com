@@ -43,6 +43,10 @@ export class FishNavigationModel {
     this.setCurrentPosition(-120 - Math.random() * 120, -120 - Math.random() * 120);
   }
 
+  /**
+   * Retrieves the current fish id.
+   * @returns {number} The current fish id.
+   */
   public getFishId(): number {
     return this.fishId;
   }
