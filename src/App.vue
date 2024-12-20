@@ -21,6 +21,5 @@ const reversedFishIds = computed(() => {
   position: absolute;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(10px 40px 7px rgba(0, 0, 0, 0.06));
 }
 </style>
