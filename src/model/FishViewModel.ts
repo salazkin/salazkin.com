@@ -30,7 +30,9 @@ export const FishViewModel = new (class {
   public readonly totalColorfulFishCount: number = 3;
 
   // Pool of available colors for colorful fish
-  private fishColors: number[] = [0x99ff00, 0x00ccff, 0xff6600, 0xff9933, 0xff99cc, 0xff0000];
+  //private fishColors: number[] = [0x99ff00, 0x00ccff, 0xff6600, 0xff9933, 0xff99cc, 0xff0000];
+  //private fishColors: number[] = [0xef476f, 0xf78c6b, 0xffd166, 0x06d6a0, 0x118ab2, 0x073b4c];
+  private fishColors: number[] = [0x01befe, 0xffdd00, 0xff7d00, 0xff006d, 0xadff02, 0x8f00ff];
 
   // Default color for non-colorful fish
   private defaultFishColor: number = 0xaaaaaa;

@@ -1,5 +1,5 @@
 <template>
-  <svg id="main-svg">
+  <svg class="main-svg">
     <Fish v-for="fishId in reversedFishIds" :key="fishId" :fishId="fishId" />
   </svg>
   <Logo />
@@ -16,10 +16,11 @@ const reversedFishIds = computed(() => {
 });
 </script>
 
-<style>
-#main-svg {
+<style scoped>
+.main-svg {
   position: absolute;
   width: 100%;
   height: 100%;
+  filter: drop-shadow(10px 40px 7px rgba(0, 0, 0, 0.06));
 }
 </style>

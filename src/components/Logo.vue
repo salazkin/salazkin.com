@@ -1,7 +1,7 @@
 <template>
   <div class="logo-container">
     <svg
-      class="logo-svg"
+      class="logo-svg logo-hover"
       width="18%"
       height="18%"
       viewBox="0 0 51 36"
@@ -38,9 +38,9 @@ const navigateToUrl = () => {
 }
 
 .tooltip {
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
   visibility: hidden;
-  color: #666666;
+  color: #a3a3a3;
   font-family: sans-serif;
   user-select: none;
   pointer-events: none;
@@ -48,20 +48,24 @@ const navigateToUrl = () => {
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
+.logo-svg {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
 @media (hover: hover) {
-  .logo-svg {
-    cursor: pointer;
-    opacity: 0.7;
+  .logo-hover {
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
 
-  .logo-svg:hover {
+  .logo-hover:hover {
     opacity: 1;
   }
 
-  .logo-svg:hover + .tooltip {
+  .logo-hover:hover + .tooltip {
     visibility: visible;
     opacity: 1;
+    transition: opacity 0.3s ease 0.5s, visibility 0.3s ease 0.5s;
   }
 }
 </style>
