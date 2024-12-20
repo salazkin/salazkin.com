@@ -18,7 +18,7 @@ export default {
   name: "Logo",
   setup() {
     const logoPos = reactive({ x: 30, y: 30 });
-    const logoColor = getColorStr(0xffffff);
+    const logoColor = getColorStr(0xffffff, 0.8);
     const logoBounds = reactive({ w: 51, h: 36 });
 
     const tooltipText = "github.com/salazkin";
