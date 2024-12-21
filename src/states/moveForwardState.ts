@@ -8,49 +8,49 @@ import { Ref } from "vue";
 import { FishViewModel } from "model/FishViewModel";
 
 export const moveForwardStateHandler = (data: {
-  fishNavigationModel: Ref<FishNavigationModel>;
+  fishNavigationModel: FishNavigationModel;
   currentTailSpeed: Ref<number>;
   gotoTailSpeed: Ref<number>;
 }): StateHandler<FishState> => {
   return async (next, exit) => {
     const { fishNavigationModel, currentTailSpeed, gotoTailSpeed } = data;
-    fishNavigationModel.value.setTurnDirection(0);
+    fishNavigationModel.setTurnDirection(0);
 
-    const { startSpeed, endSpeed } = FishViewModel.getRandomTailSpeed(fishNavigationModel.value.isRush());
+    const { startSpeed, endSpeed } = FishViewModel.getRandomTailSpeed(fishNavigationModel.isRush());
     currentTailSpeed.value = startSpeed;
     gotoTailSpeed.value = endSpeed;
 
-    const pos: Vec2 = fishNavigationModel.value.getCurrentPosition();
+    const pos: Vec2 = fishNavigationModel.getCurrentPosition();
     let flag = { skip: false };
     let poke = false;
 
     const subscribe = EventBus.subscribe("onFishPoke", fishId => {
-      if (fishId === fishNavigationModel.value.getFishId() && !fishNavigationModel.value.isRush()) {
+      if (fishId === fishNavigationModel.getFishId() && !fishNavigationModel.isRush()) {
         poke = true;
-        fishNavigationModel.value.setRush(true);
-        fishNavigationModel.value.setRandomSpeed();
+        fishNavigationModel.setRush(true);
+        fishNavigationModel.setRandomSpeed();
         flag.skip = true;
       }
     });
 
     let gotoPos: Vec2;
 
-    if (fishNavigationModel.value.isFishOutsideScreenBounds()) {
-      gotoPos = fishNavigationModel.value.getClosestRandomPointOnScreen();
+    if (fishNavigationModel.isFishOutsideScreenBounds()) {
+      gotoPos = fishNavigationModel.getClosestRandomPointOnScreen();
       const newAngle = Math.PI * 0.5 - angleBetweenTwoPoints(pos, gotoPos);
-      fishNavigationModel.value.setCurrentRotation(newAngle);
+      fishNavigationModel.setCurrentRotation(newAngle);
     } else {
-      gotoPos = fishNavigationModel.value.getRandomForwardPoint();
+      gotoPos = fishNavigationModel.getRandomForwardPoint();
     }
 
     const distance = distanceBetweenTwoPoints(pos, gotoPos);
-    const duration = fishNavigationModel.value.getMoveDuration(distance);
+    const duration = fishNavigationModel.getMoveDuration(distance);
 
     await tween(
       duration,
       t => {
         const newPos = lerpVec2(pos, gotoPos, t);
-        fishNavigationModel.value.setCurrentPosition(...newPos);
+        fishNavigationModel.setCurrentPosition(...newPos);
       },
       flag
     );

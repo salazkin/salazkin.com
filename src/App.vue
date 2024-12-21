@@ -2,14 +2,14 @@
   <svg class="main-svg">
     <Fish v-for="fishId in reversedFishIds" :key="fishId" :fishId="fishId" />
   </svg>
-  <Logo />
+  <LinkButton />
 </template>
 
 <script setup lang="ts">
-import Logo from "components/Logo.vue";
-import { computed } from "vue";
-import { FishViewModel } from "model/FishViewModel";
 import Fish from "components/Fish.vue";
+import LinkButton from "components/LinkButton.vue";
+import { FishViewModel } from "model/FishViewModel";
+import { computed } from "vue";
 
 const reversedFishIds = computed(() => {
   return Array.from(Array(FishViewModel.totalFishCount).keys()).reverse();

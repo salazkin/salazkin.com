@@ -1,7 +1,7 @@
 <template>
-  <div class="logo-container">
+  <div class="btn-container">
     <svg
-      class="logo-svg logo-hover"
+      class="btn-svg btn-hover"
       width="18%"
       height="18%"
       viewBox="0 0 98 96"
@@ -30,7 +30,7 @@ const navigateToUrl = () => {
 </script>
 
 <style scoped>
-.logo-container {
+.btn-container {
   position: absolute;
   left: 30px;
   top: 30px;
@@ -48,21 +48,21 @@ const navigateToUrl = () => {
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.logo-svg {
+.btn-svg {
   cursor: pointer;
   opacity: 0.6;
 }
 
 @media (hover: hover) {
-  .logo-hover {
+  .btn-hover {
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
 
-  .logo-hover:hover {
+  .btn-hover:hover {
     opacity: 1;
   }
 
-  .logo-hover:hover + .tooltip {
+  .btn-hover:hover + .tooltip {
     visibility: visible;
     opacity: 0.8;
     transition: opacity 0.3s ease 0.5s, visibility 0.3s ease 0.5s;

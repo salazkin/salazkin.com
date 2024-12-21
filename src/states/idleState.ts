@@ -4,14 +4,14 @@ import { EventBus } from "events/EventBus";
 import { FishNavigationModel } from "model/FishNavigationModel";
 import { Ref } from "vue";
 
-export const idleStateHandler = (data: { fishNavigationModel: Ref<FishNavigationModel> }): StateHandler<FishState> => {
+export const idleStateHandler = (data: { fishNavigationModel: FishNavigationModel }): StateHandler<FishState> => {
   return async (next, exit) => {
     const { fishNavigationModel } = data;
-    fishNavigationModel.value.setTurnDirection(0);
+    fishNavigationModel.setTurnDirection(0);
 
     const flag = { skip: false };
     const subscribe = EventBus.subscribe("onFishPoke", fishId => {
-      if (fishId !== fishNavigationModel.value.getFishId()) {
+      if (fishId !== fishNavigationModel.getFishId()) {
         return;
       }
       flag.skip = true;
@@ -22,13 +22,13 @@ export const idleStateHandler = (data: { fishNavigationModel: Ref<FishNavigation
       return { next, exit };
     };
 
-    await delay(fishNavigationModel.value.getRandomIdleDelay(), flag);
+    await delay(fishNavigationModel.getRandomIdleDelay(), flag);
     if (flag.skip) {
-      fishNavigationModel.value.setRush(true);
+      fishNavigationModel.setRush(true);
     } else {
-      fishNavigationModel.value.setRandomRush();
+      fishNavigationModel.setRandomRush();
     }
-    fishNavigationModel.value.setRandomSpeed();
+    fishNavigationModel.setRandomSpeed();
     cleanUp().next("rotation");
   };
 };

@@ -53,7 +53,7 @@ const { spineTurnPoseBonesAngle, totalSpineBones } = FishViewModel;
 
 fishColor.value = getColorStr(FishViewModel.getFishColor());
 
-const fishNavigationModel: Ref<FishNavigationModel> = ref();
+let fishNavigationModel: FishNavigationModel;
 
 const moveDecay: Ref<number> = ref(0);
 moveDecay.value = FishViewModel.getRandomMoveDecay();
@@ -88,7 +88,7 @@ function drawSkin() {
 }
 
 function setRandomTailSpeed(): void {
-  const { startSpeed, endSpeed } = FishViewModel.getRandomTailSpeed(fishNavigationModel.value.isRush());
+  const { startSpeed, endSpeed } = FishViewModel.getRandomTailSpeed(fishNavigationModel.isRush());
   currentTailSpeed.value = startSpeed;
   gotoTailSpeed.value = endSpeed;
 }
@@ -114,7 +114,7 @@ function createBones(): void {
 }
 
 const onEnterFrame = (dt: number) => {
-  const gotoPos = fishNavigationModel.value.getCurrentPosition();
+  const gotoPos = fishNavigationModel.getCurrentPosition();
   const currentPos = smoothInterpolateVec2([fishPos.value[0], fishPos.value[1]], gotoPos, moveDecay.value, dt);
   const dist = distanceBetweenTwoPoints(currentPos, gotoPos);
   if (dist > 0.1) {
@@ -158,13 +158,13 @@ const onOver = () => {
 };
 
 onMounted(() => {
-  fishNavigationModel.value = new FishNavigationModel(props.fishId);
-  fishPos.value = fishNavigationModel.value.getCurrentPosition();
+  fishNavigationModel = new FishNavigationModel(props.fishId);
+  fishPos.value = fishNavigationModel.getCurrentPosition();
 
   setRandomTailSpeed();
   createBones();
 
-  fishNavigationModel.value.onTurnDirectionChangeSignal.add(onTurnDirectionChange);
+  fishNavigationModel.onTurnDirectionChangeSignal.add(onTurnDirectionChange);
   states<FishState>({
     async start(next) {
       next("moveForward");

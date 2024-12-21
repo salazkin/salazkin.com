@@ -8,22 +8,22 @@ import { Ref } from "vue";
 import { FishState } from "./FishStates";
 
 export const rotationStateHandler = (data: {
-  fishNavigationModel: Ref<FishNavigationModel>;
+  fishNavigationModel: FishNavigationModel;
   moveDecay: Ref<number>;
 }): StateHandler<FishState> => {
   return async (next, exit) => {
     const { fishNavigationModel, moveDecay } = data;
 
     moveDecay.value = FishViewModel.getRandomMoveDecay();
-    if (fishNavigationModel.value.isFishOutsideScreenBounds()) {
+    if (fishNavigationModel.isFishOutsideScreenBounds()) {
       next("moveForward");
       return;
     }
 
     const subscribe = EventBus.subscribe("onFishPoke", fishId => {
-      if (fishId === fishNavigationModel.value.getFishId() && !fishNavigationModel.value.isRush()) {
-        fishNavigationModel.value.setRush(true);
-        fishNavigationModel.value.setRandomSpeed();
+      if (fishId === fishNavigationModel.getFishId() && !fishNavigationModel.isRush()) {
+        fishNavigationModel.setRush(true);
+        fishNavigationModel.setRandomSpeed();
         flag.skip = true;
       }
     });
@@ -35,23 +35,23 @@ export const rotationStateHandler = (data: {
 
     let flag = { skip: false };
 
-    const { center, angle, radius } = fishNavigationModel.value.getRandomRotationAngle();
+    const { center, angle, radius } = fishNavigationModel.getRandomRotationAngle();
 
-    fishNavigationModel.value.setTurnDirection(angle < 0 ? -1 : 1);
+    fishNavigationModel.setTurnDirection(angle < 0 ? -1 : 1);
 
-    const pos: Vec2 = fishNavigationModel.value.getCurrentPosition();
-    const currentAngle = fishNavigationModel.value.getCurrentRotation();
+    const pos: Vec2 = fishNavigationModel.getCurrentPosition();
+    const currentAngle = fishNavigationModel.getCurrentRotation();
 
     const distance = Math.abs(radius * degreeToRadians(angle));
-    const duration = fishNavigationModel.value.getMoveDuration(distance);
+    const duration = fishNavigationModel.getMoveDuration(distance);
 
     await tween(
       duration,
       t => {
         const rotation = degreeToRadians(t * angle);
         const newPos = rotatePointAround(pos, center, rotation);
-        fishNavigationModel.value.setCurrentPosition(...newPos);
-        fishNavigationModel.value.setCurrentRotation(currentAngle + rotation);
+        fishNavigationModel.setCurrentPosition(...newPos);
+        fishNavigationModel.setCurrentRotation(currentAngle + rotation);
       },
       flag
     );
