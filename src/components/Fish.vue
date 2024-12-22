@@ -2,8 +2,11 @@
   <svg xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient :id="`gradient${props.fishId}`" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" :style="`stop-color: ${fishColor}; stop-opacity: 0.4;`" />
-        <stop offset="60%" :style="`stop-color: ${fishColor}; stop-opacity: 1;`" />
+        <stop
+          v-for="gradient in fishAlphaGradient"
+          :offset="`${gradient.offset * 100}%`"
+          :style="`stop-color: ${fishColor}; stop-opacity: ${gradient.alpha};`"
+        />
       </linearGradient>
     </defs>
 
@@ -48,6 +51,7 @@ const fishPos: Ref<Vec2> = ref([0, 0]);
 const rotationDeg: Ref<number> = ref(0);
 const skinPoints: Ref<string> = ref();
 
+const fishAlphaGradient: Ref<{ offset: number; alpha: number }[]> = ref(FishViewModel.fishAlphaGradient);
 const fishColor: Ref<string> = ref();
 const { spineTurnPoseBonesAngle, totalSpineBones } = FishViewModel;
 

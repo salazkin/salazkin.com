@@ -29,7 +29,13 @@ export const FishViewModel = new (class {
   // Total number of colorful fish
   public readonly totalColorfulFishCount: number = 3;
 
-  // Pool of available colors for colorful fish
+  // Gradient array
+  public readonly fishAlphaGradient: { offset: number; alpha: number }[] = [
+    { offset: 0, alpha: 0.4 },
+    { offset: 0.4, alpha: 1 }
+  ];
+
+  // Pool of available colors 
   private fishColors: number[] = [0x01befe, 0xffdd00, 0xff7d00, 0xff006d, 0xadff02, 0x8f00ff, 0xff0000];
 
   /**
