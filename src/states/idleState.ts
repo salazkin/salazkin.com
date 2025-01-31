@@ -1,8 +1,7 @@
-import { delay, StateHandler } from "utils/promiseUtils";
+import { delay, StateHandler } from "@salazkin/promise-utils";
 import { FishState } from "./FishStates";
 import { EventBus } from "events/EventBus";
 import { FishNavigationModel } from "model/FishNavigationModel";
-import { Ref } from "vue";
 
 export const idleStateHandler = (data: { fishNavigationModel: FishNavigationModel }): StateHandler<FishState> => {
   return async (next, exit) => {

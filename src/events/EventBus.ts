@@ -1,4 +1,4 @@
-import { Signal } from "utils/Signal";
+import { Signal } from "@salazkin/signals";
 
 export type Subscribe = {
   unsubscribe: () => void;

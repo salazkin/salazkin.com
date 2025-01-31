@@ -2,10 +2,10 @@ import { EventBus } from "events/EventBus";
 import { FishNavigationModel } from "model/FishNavigationModel";
 import { FishViewModel } from "model/FishViewModel";
 import { Vec2 } from "types/types";
-import { StateHandler, tween } from "utils/promiseUtils";
 import { degreeToRadians, rotatePointAround } from "utils/mathUtils";
 import { Ref } from "vue";
 import { FishState } from "./FishStates";
+import { StateHandler, tween } from "@salazkin/promise-utils";
 
 export const rotationStateHandler = (data: {
   fishNavigationModel: FishNavigationModel;

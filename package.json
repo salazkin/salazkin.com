@@ -1,6 +1,6 @@
 {
   "name": "salazkin.com",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,6 +12,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@salazkin/easing-functions": "^1.0.0",
+    "@salazkin/promise-utils": "^1.0.0",
+    "@salazkin/signals": "^1.0.3",
     "vue": "3.5.13"
   },
   "devDependencies": {

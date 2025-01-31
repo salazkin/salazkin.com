@@ -1,4 +1,4 @@
-import { quadEaseOut } from "utils/easingFunctions";
+import { quadEaseOut } from "@salazkin/easing-functions";
 
 export const FishViewModel = new (class {
   // Total number of spine bones
@@ -35,7 +35,7 @@ export const FishViewModel = new (class {
     { offset: 0.4, alpha: 1 }
   ];
 
-  // Pool of available colors 
+  // Pool of available colors
   private fishColors: number[] = [0x01befe, 0xffdd00, 0xff7d00, 0xff006d, 0xadff02, 0x8f00ff, 0xff0000];
 
   /**

@@ -1,5 +1,5 @@
+import { reactive } from "@salazkin/signals";
 import { Vec2 } from "types/types";
-import { Signal } from "utils/Signal";
 import {
   addVec2,
   degreeToRadians,
@@ -11,7 +11,7 @@ import {
 
 // direction of a turn: -1: Left turn, 0: No turn, 1: Right turn.
 export type TurnDirection = -1 | 0 | 1;
-
+export type TurnDirectionData = { direction: TurnDirection };
 export class FishNavigationModel {
   //The current movement speed of the fish.
   private currentSpeed: number;
@@ -32,10 +32,7 @@ export class FishNavigationModel {
   private fishBoundsRadius = 120;
 
   //The current turn direction of the fish (-1, 0, or 1).
-  private turnDirection: TurnDirection = 0;
-
-  //Signal dispatched when the turn direction changes.
-  public onTurnDirectionChangeSignal: Signal<TurnDirection> = new Signal();
+  public turnDirection = reactive<TurnDirectionData>({ direction: 0 });
 
   constructor(private fishId: number) {
     this.setRandomSpeed();
@@ -84,18 +81,9 @@ export class FishNavigationModel {
    * @param {TurnDirection} value - The new turn direction (-1, 0, or 1).
    */
   public setTurnDirection(value: TurnDirection): void {
-    if (this.turnDirection !== value) {
-      this.turnDirection = value;
-      this.onTurnDirectionChangeSignal.dispatch(this.turnDirection);
+    if (this.turnDirection.direction !== value) {
+      this.turnDirection.direction = value;
     }
-  }
-
-  /**
-   * Retrieves the current turn direction of the fish.
-   * @returns {TurnDirection} The current turn direction.
-   */
-  public getTurnDirection(): TurnDirection {
-    return this.turnDirection;
   }
 
   /**

@@ -1,11 +1,11 @@
 import { EventBus } from "events/EventBus";
 import { FishNavigationModel } from "model/FishNavigationModel";
 import { Vec2 } from "types/types";
-import { StateHandler, tween } from "utils/promiseUtils";
 import { angleBetweenTwoPoints, distanceBetweenTwoPoints, lerpVec2 } from "utils/mathUtils";
 import { FishState } from "./FishStates";
 import { Ref } from "vue";
 import { FishViewModel } from "model/FishViewModel";
+import { StateHandler, tween } from "@salazkin/promise-utils";
 
 export const moveForwardStateHandler = (data: {
   fishNavigationModel: FishNavigationModel;

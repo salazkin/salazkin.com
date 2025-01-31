@@ -14,17 +14,11 @@ export class Timer {
     return this;
   }
 
-  /**
-   * Starts the timer.
-   */
   public start(): void {
     this.oldTime = Date.now();
     this.onRequestAnimationFrame();
   }
 
-  /**
-   * Stops the timer.
-   */
   public stop(): void {
     cancelAnimationFrame(this.requestAnimationFrameId);
   }

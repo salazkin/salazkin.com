@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { Bone } from "components/Bone";
 import { EventBus } from "events/EventBus";
-import { FishNavigationModel, TurnDirection } from "model/FishNavigationModel";
+import { FishNavigationModel, TurnDirectionData } from "model/FishNavigationModel";
 import { FishViewModel } from "model/FishViewModel";
 import { FishState } from "states/FishStates";
 import { idleStateHandler } from "states/idleState";
@@ -39,9 +39,10 @@ import {
   smoothInterpolate,
   smoothInterpolateVec2
 } from "utils/mathUtils";
-import { states } from "utils/promiseUtils";
 import { Timer } from "utils/Timer";
 import { onMounted, Ref, ref } from "vue";
+import { states } from "@salazkin/promise-utils";
+import { WatchData } from "@salazkin/signals";
 
 const props = defineProps<{
   fishId: number;
@@ -78,7 +79,8 @@ const gotoSpineBlend: Ref<number> = ref(0);
 const currentTailSpeed: Ref<number> = ref(0);
 const gotoTailSpeed: Ref<number> = ref(0);
 
-function onTurnDirectionChange(turnDirection: TurnDirection): void {
+function onTurnDirectionChange(data: WatchData<TurnDirectionData>): void {
+  const { value: turnDirection } = data;
   if (turnDirection === 0) {
     gotoSpineBlend.value = 0;
     return;
@@ -168,7 +170,8 @@ onMounted(() => {
   setRandomTailSpeed();
   createBones();
 
-  fishNavigationModel.onTurnDirectionChangeSignal.add(onTurnDirectionChange);
+  fishNavigationModel.turnDirection.watch(onTurnDirectionChange);
+
   states<FishState>({
     async start(next) {
       next("moveForward");
